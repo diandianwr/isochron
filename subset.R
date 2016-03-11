@@ -3,12 +3,12 @@ library(dplyr)
 library(sp)
 library(geosphere)
 
-setwd("C:\\Users\\weiran\\Documents\\HHSurvey\\isochronr")
+# setwd("C:\\Users\\weiran\\Documents\\HHSurvey\\isochronr")
 
 # read data
-trip<-read.table("Trip.csv",header=TRUE,sep=",",quote="\"",flush=TRUE,fill=TRUE,
+trip<-read.table("5_PSRC2015_GPS_Trip.csv",header=TRUE,sep=",",quote="\"",flush=TRUE,fill=TRUE,
                  stringsAsFactors=FALSE)
-loc<-read.table("Location.csv",header=TRUE,sep=",",quote="\"",flush=TRUE,fill=TRUE,
+loc<-read.table("6_PSRC2015_GPS_Location.csv",header=TRUE,sep=",",quote="\"",flush=TRUE,fill=TRUE,
                    stringsAsFactors=FALSE)
 
 #----------------------------------------------------
@@ -126,14 +126,9 @@ trip_5 <- trip1 %>%
   select(-time.start)%>%
   mutate(tripid=as.character(tripid))%>%
   right_join(trip5m,by=c("tripid"="tripid5"))%>%
-  select(olat,olng,lat5,lon5,neighborhood,mode)%>%
-  filter(mode>0 & mode <40)
-
-  
-trip_5car <-trip_5%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>% # exclude non-motorized trip
-  na.omit() # exclude trips outside region, neiborhood is na
-    
+  select(olat,olng,lat5,lon5,neighborhood,mode,start_time)%>%
+  filter(mode>0 & mode <40)%>% #exclude outlier  
+  na.omit()   # exclude trips outside region, neiborhood is na
 #4987 observations and 1034 observations are in car
 
 
@@ -147,31 +142,39 @@ trip_10 <- trip1 %>%
   select(-time.start)%>%
   mutate(tripid=as.character(tripid))%>%
   right_join(trip10m,by=c("tripid"="tripid10"))%>%
-  select(olat,olng,lat10,lon10,neighborhood,mode)%>%
-  filter(mode>0 & mode <40) #exclude outlier
-
-trip_10car <-trip_10%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>%  # exclude non-motorized trip
+  select(olat,olng,lat10,lon10,neighborhood,mode,start_time)%>%
+  filter(mode>0 & mode <40)%>% #exclude outlier  
   na.omit()   # exclude trips outside region, neiborhood is na
+
+
 
 #4442 observations and 862 observations are in car
 
 #---------------------------------------------------------------
 
 #caculate distance from origin to 5, 10 location
-start <- cbind(trip_5car$olng,trip_5car$olat)
-end <- cbind(trip_5car$lon5,trip_5car$lat5)
-for (i in 1:length(trip_5car$lat5))
+start <- cbind(trip_5$olng,trip_5$olat)
+end <- cbind(trip_5$lon5,trip_5$lat5)
+for (i in 1:length(trip_5$lat5))
   {
-  trip_5car$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
+  trip_5$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
 
-start <- cbind(trip_10car$olng,trip_10car$olat)
-end <- cbind(trip_10car$lon10,trip_10car$lat10)
+start <- cbind(trip_10$olng,trip_10$olat)
+end <- cbind(trip_10$lon10,trip_10car$lat10)
 for (i in 1:length(trip_10car$lat10))
 {
-  trip_10car$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
+  trip_10$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
+
+
+
+#---------------------------
+trip_10car <-trip_10%>%
+  filter(mode ==6|mode ==7 |mode ==16|mode ==17)  # exclude non-motorized trip
+
+trip_5car <-trip_5%>%
+  filter(mode ==6|mode ==7 |mode ==16|mode ==17) # exclude non-motorized trip
 
 
 write.csv(trip_5car,"trip_5car.csv")
