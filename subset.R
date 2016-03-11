@@ -126,10 +126,10 @@ trip_5 <- trip1 %>%
   select(-time.start)%>%
   mutate(tripid=as.character(tripid))%>%
   right_join(trip5m,by=c("tripid"="tripid5"))%>%
-  select(olat,olng,lat5,lon5,neighborhood,mode,start_time)%>%
+  select(olat,olng,lat5,lon5,neighborhood,mode,time_start)%>%
   filter(mode>0 & mode <40)%>% #exclude outlier  
   na.omit()   # exclude trips outside region, neiborhood is na
-#4987 observations and 1034 observations are in car
+#2275 observations and 1034 observations are in car
 
 
 # join 5minutes locations to trip data
@@ -142,13 +142,13 @@ trip_10 <- trip1 %>%
   select(-time.start)%>%
   mutate(tripid=as.character(tripid))%>%
   right_join(trip10m,by=c("tripid"="tripid10"))%>%
-  select(olat,olng,lat10,lon10,neighborhood,mode,start_time)%>%
+  select(olat,olng,lat10,lon10,neighborhood,mode,time_start)%>%
   filter(mode>0 & mode <40)%>% #exclude outlier  
   na.omit()   # exclude trips outside region, neiborhood is na
 
 
 
-#4442 observations and 862 observations are in car
+#1753 observations and 862 observations are in car
 
 #---------------------------------------------------------------
 
@@ -161,15 +161,17 @@ for (i in 1:length(trip_5$lat5))
 }
 
 start <- cbind(trip_10$olng,trip_10$olat)
-end <- cbind(trip_10$lon10,trip_10car$lat10)
-for (i in 1:length(trip_10car$lat10))
+end <- cbind(trip_10$lon10,trip_10$lat10)
+for (i in 1:length(trip_10$lat10))
 {
   trip_10$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
 
-
+write.csv(trip_5,"trip_5.csv")
+write.csv(trip_10,"trip_10.csv")
 
 #---------------------------
+#chose mode 
 trip_10car <-trip_10%>%
   filter(mode ==6|mode ==7 |mode ==16|mode ==17)  # exclude non-motorized trip
 
