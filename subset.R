@@ -171,25 +171,17 @@ write.csv(trip_5,"trip_5.csv")
 write.csv(trip_10,"trip_10.csv")
 
 #---------------------------
-#chose mode 
-trip_10car <-trip_10%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17)  # exclude non-motorized trip
-
-trip_5car <-trip_5%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17) # exclude non-motorized trip
-
-
-write.csv(trip_5car,"trip_5car.csv")
-write.csv(trip_10car,"trip_10car.csv")
+#chose mode and summarise
 
 #summary distance by neighborhood
-trip_5car_dis <- trip_5car%>%
+trip_5car_dis <- trip_5%>%
+  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>% # exclude non-motorized trip
   group_by(neighborhood)%>%
   summarise(dis5mean=mean(dis), dis5sd=sd(dis),
             count= n(),dis5max=max(dis),dis5min=min(dis))
   
-
-trip_10car_dis <- trip_10car%>%
+trip_10car_dis <- trip_10%>%
+  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>% # exclude non-motorized trip
   group_by(neighborhood)%>%
   summarise(dismean10=mean(dis), dis10sd=sd(dis),
             count= n(),dis10max=max(dis),dis10min=min(dis))
