@@ -187,5 +187,4 @@ trip_car_dis <- trip_5_10car%>%
             dis10mean=mean(dis10), dis10sd=sd(dis10),
             dis10max=max(dis10),dis10min=min(dis10))
 
-
 write.csv(trip_car_dis,"trip_car_dis.csv")

@@ -1,4 +1,4 @@
-setwd("/Users/Wei/Documents/2016 Winter/Github/isochron")
+# setwd("/Users/Wei/Documents/2016 Winter/Github/isochron")
 dist <- read.csv("trip_5_10car.csv")
 
 
