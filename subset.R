@@ -157,14 +157,14 @@ start <- cbind(trip_5$olng,trip_5$olat)
 end <- cbind(trip_5$lon5,trip_5$lat5)
 for (i in 1:length(trip_5$lat5))
   {
-  trip_5$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
+  trip_5$dis5[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
 
 start <- cbind(trip_10$olng,trip_10$olat)
 end <- cbind(trip_10$lon10,trip_10$lat10)
 for (i in 1:length(trip_10$lat10))
 {
-  trip_10$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
+  trip_10$dis10[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
 
 
@@ -180,21 +180,12 @@ write.csv(trip_5_10car,"trip_5_10car.csv")
 #chose mode and summarise
 
 #summary distance by neighborhood
-trip_5car_dis <- trip_5%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>% # exclude non-motorized trip
-  group_by(neighborhood)%>%
-  summarise(dis5mean=mean(dis), dis5sd=sd(dis),
-            count= n(),dis5max=max(dis),dis5min=min(dis))
-  
-trip_10car_dis <- trip_10%>%
-  filter(mode ==6|mode ==7 |mode ==16|mode ==17)%>% # exclude non-motorized trip
-  group_by(neighborhood)%>%
-  summarise(dismean10=mean(dis), dis10sd=sd(dis),
-            count= n(),dis10max=max(dis),dis10min=min(dis))
+trip_car_dis <- trip_5_10car%>%
+  group_by(neighborhood.x)%>%
+  summarise(count= n(),dis5mean=mean(dis5), dis5sd=sd(dis5),
+            dis5max=max(dis5),dis5min=min(dis5),
+            dis10mean=mean(dis10), dis10sd=sd(dis10),
+            dis10max=max(dis10),dis10min=min(dis10))
 
-#join 5 minuntes 10 minuntes distance by neighborhood, 78 matched 
-trip_5_10_dis<-inner_join(trip_5car_dis,trip_10car_dis,by = "neighborhood")
 
-write.csv(trip_5car_dis,"trip_5car_dis.csv")
-write.csv(trip_10car_dis,"trip_10car_dis.csv")
-write.csv(trip_5_10_dis,"trip_car_dis.csv")
+write.csv(trip_car_dis,"trip_car_dis.csv")
