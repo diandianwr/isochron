@@ -175,12 +175,33 @@ trip_5_10<-inner_join(trip_5,trip_10,by = "olat")
 trip_5_10car <- trip_5_10%>%
   filter(mode ==6|mode ==7 |mode ==16|mode ==17)# exclude non-motorized trip
 
-write.csv(trip_5_10car,"trip_5_10car.csv")
+
 #---------------------------
+
+#adding peak hour variable
+trip_5_10car$time_start <- strptime(trip_5_10car$time_start.x,format="%m/%d/%Y %H:%M:%OS")
+trip_5_10car$group <- paste0(substr(trip_5_10car$time_start,12,13))
+trip_5_10car$group <- as.numeric(trip_5_10car$group)
+
+for(i in 1:length(trip_5_10car$group)){
+  if((trip_5_10car$group[i] >=7 &&  trip_5_10car$group[i] <9)){
+    trip_5_10car$hour[i] <- "peakhour"
+  } else if((trip_5_10car$group[i] >=16 && trip_5_10car$group[i] <19)){
+    trip_5_10car$hour[i] <- "peakhour"
+  }  else{
+    trip_5_10car$hour[i] <- "other"
+  }
+}
+
+write.csv(trip_5_10car,"trip_5_10car.csv")
+
 #chose mode and summarise
 
 #summary distance by neighborhood
+trip_5_10car$time_start <- strptime(trip_5_10car$time_start.x,format="%m/%d/%Y %H:%M:%OS")
+
 trip_car_dis <- trip_5_10car%>%
+  select(-time_start)%>%
   group_by(neighborhood.x)%>%
   summarise(count= n(),dis5mean=mean(dis5), dis5sd=sd(dis5),
             dis5max=max(dis5),dis5min=min(dis5),
