@@ -167,9 +167,15 @@ for (i in 1:length(trip_10$lat10))
   trip_10$dis[i] <- distm(start[i,], end[i,], fun = distHaversine)
 }
 
-write.csv(trip_5,"trip_5.csv")
-write.csv(trip_10,"trip_10.csv")
 
+trip_5<-trip_5%>%
+  select(-mode)
+
+trip_5_10<-inner_join(trip_5,trip_10,by = "olat")
+trip_5_10car <- trip_5_10%>%
+  filter(mode ==6|mode ==7 |mode ==16|mode ==17)# exclude non-motorized trip
+
+write.csv(trip_5_10car,"trip_5_10car.csv")
 #---------------------------
 #chose mode and summarise
 
@@ -191,4 +197,4 @@ trip_5_10_dis<-inner_join(trip_5car_dis,trip_10car_dis,by = "neighborhood")
 
 write.csv(trip_5car_dis,"trip_5car_dis.csv")
 write.csv(trip_10car_dis,"trip_10car_dis.csv")
-write.csv(trip_5_10_dis,"trip_5_10_dis.csv")
+write.csv(trip_5_10_dis,"trip_car_dis.csv")
